@@ -11,7 +11,7 @@ public interface ArtistService {
     List<Artist> findAll();
     Artist findById(Long artistId);
     void save(Artist artist);
-    void update(Long id, Artist newValue);
+    boolean update(Long id, Artist newValue);
     void deleteById(Long artistId);
     void deleteAll();
 

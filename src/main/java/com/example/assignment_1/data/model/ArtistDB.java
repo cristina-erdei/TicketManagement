@@ -26,6 +26,7 @@ public class ArtistDB {
     }
 
     public ArtistDB(Artist artist){
+        this.id = artist.getId();
         this.name = artist.getName();
         this.concerts = artist.getConcerts().stream().map(ConcertDB::new).collect(Collectors.toList());
     }

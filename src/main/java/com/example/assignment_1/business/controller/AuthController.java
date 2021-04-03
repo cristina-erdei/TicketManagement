@@ -1,6 +1,9 @@
 package com.example.assignment_1.business.controller;
 
+import com.example.assignment_1.business.model.LoginRequestModel;
 import com.example.assignment_1.business.model.User;
+import com.example.assignment_1.business.service.implementation.UserServiceImpl;
+import com.example.assignment_1.business.service.interfaces.UserService;
 import com.example.assignment_1.data.model.UserDB;
 import com.example.assignment_1.data.model.UserRole;
 import com.example.assignment_1.data.repository.UserRepository;
@@ -11,54 +14,42 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
+import java.util.Random;
 
-class LoginRequestModel {
-    String username;
-    String password;
-}
-
-@RestController("/auth")
+@RestController("/authentication")
 public class AuthController {
 
-    @Qualifier("userRepository")
+
     @Autowired
-    private UserRepository userRepository;
+    private UserServiceImpl userService;
 
     @PostMapping("/login")
     public @ResponseBody String login(@RequestBody LoginRequestModel loginRequestModel) {
-        UserDB user =  userRepository.findByUsername(loginRequestModel.username);
+        User user =  userService.findByUsername(loginRequestModel.getUsername());
 
-        if (Objects.equals(user.getPassword(), loginRequestModel.password)) {
-            return user.getToken();
+        if (!Objects.equals(user.getPassword(), loginRequestModel.getPassword())) {
+            return null;
         }
 
-        return null;
+        String token = tokenGenerationStrategy();
+
+        userService.updateToken(user.getId(), token);
+
+        return token;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity.BodyBuilder create(@RequestBody User user, @RequestHeader("Token") String token) {
-        UserDB requestingUser =  userRepository.findByToken(token);
+    private String tokenGenerationStrategy() {
 
-        if (requestingUser.getRole() != UserRole.Administrator) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+        int targetStringLength = 10;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = (int)
+                    (random.nextFloat() * 255);
+            buffer.append((char) randomLimitedInt);
         }
 
-        userRepository.save(new UserDB(user));
-
-        return ResponseEntity.status(HttpStatus.CREATED);
+        return buffer.toString();
     }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity.BodyBuilder delete(@PathVariable Long id, @RequestHeader("Token") String token) {
-        UserDB requestingUser =  userRepository.findByToken(token);
-
-        if (requestingUser.getRole() != UserRole.Administrator) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED);
-        }
-
-        userRepository.deleteById(id);
-
-        return ResponseEntity.status(HttpStatus.CREATED);
-    }
-
 }
+

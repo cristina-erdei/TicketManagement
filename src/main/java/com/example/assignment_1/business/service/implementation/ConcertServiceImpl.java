@@ -1,26 +1,27 @@
 package com.example.assignment_1.business.service.implementation;
 
-import com.example.assignment_1.business.model.Artist;
 import com.example.assignment_1.business.model.Concert;
 import com.example.assignment_1.business.model.Ticket;
 import com.example.assignment_1.business.service.interfaces.ConcertService;
+import com.example.assignment_1.data.model.ArtistDB;
 import com.example.assignment_1.data.model.ConcertDB;
+import com.example.assignment_1.data.model.TicketDB;
 import com.example.assignment_1.data.repository.ConcertRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ConcertServiceImpl implements ConcertService {
-    private final ConcertRepository concertRepository;
 
-    public ConcertServiceImpl(ConcertRepository concertRepository) {
-        this.concertRepository = concertRepository;
-    }
 
+    @Qualifier("concertRepository")
+    @Autowired
+    private ConcertRepository concertRepository;
 
     @Override
     public List<Concert> findAll() {
@@ -39,15 +40,22 @@ public class ConcertServiceImpl implements ConcertService {
     }
 
     @Override
-    public void update(Long id, Concert newValue) {
-        Concert concert = findById(id);
-        concert.setArtist(newValue.getArtist());
-        concert.setTickets(newValue.getTickets());
+    public boolean update(Long id, Concert newValue) {
+        Optional<ConcertDB> aux = concertRepository.findById(id);
+
+        if(aux.isEmpty()) return false;
+
+        ConcertDB concert = aux.get();
+
+        concert.setArtist(new ArtistDB(newValue.getArtist()));
+        concert.setTickets(newValue.getTickets().stream().map(TicketDB::new).collect(Collectors.toList()));
         concert.setTitle(newValue.getTitle());
         concert.setMaximumNumberOfTickets(newValue.getMaximumNumberOfTickets());
         concert.setDateAndTime(newValue.getDateAndTime());
         concert.setGenre(newValue.getGenre());
-        concertRepository.save(new ConcertDB(concert));
+        concertRepository.save(concert);
+
+        return true;
     }
 
     @Override

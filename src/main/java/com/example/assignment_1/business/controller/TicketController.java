@@ -15,7 +15,7 @@ public class TicketController {
     private TicketServiceImpl ticketService;
 
     @GetMapping("/getAll")
-    public List<Ticket> findAll(){
+    public @ResponseBody List<Ticket> findAll(){
         return ticketService.findAll();
     }
 

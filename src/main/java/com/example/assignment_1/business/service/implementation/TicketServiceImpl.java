@@ -2,8 +2,11 @@ package com.example.assignment_1.business.service.implementation;
 
 import com.example.assignment_1.business.model.Ticket;
 import com.example.assignment_1.business.service.interfaces.TicketService;
+import com.example.assignment_1.data.model.ConcertDB;
 import com.example.assignment_1.data.model.TicketDB;
 import com.example.assignment_1.data.repository.TicketRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,12 +15,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class TicketServiceImpl implements TicketService {
-    private final TicketRepository ticketRepository;
 
-    public TicketServiceImpl(TicketRepository ticketRepository) {
-        this.ticketRepository = ticketRepository;
-    }
 
+    @Qualifier("ticketRepository")
+    @Autowired
+    private TicketRepository ticketRepository;
 
     @Override
     public List<Ticket> findAll() {
@@ -36,11 +38,17 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public void update(Long id, Ticket newValue) {
-        Ticket ticket = findById(id);
-        ticket.setConcert(newValue.getConcert());
+    public boolean update(Long id, Ticket newValue) {
+        Optional<TicketDB> aux = ticketRepository.findById(id);
+
+        if(aux.isEmpty()) return false;
+
+        TicketDB ticket = aux.get();
+        ticket.setConcert(new ConcertDB(newValue.getConcert()));
         ticket.setNumberOfSeats(newValue.getNumberOfSeats());
-        ticketRepository.save(new TicketDB(ticket));
+        ticketRepository.save(ticket);
+        return true;
+
     }
 
     @Override

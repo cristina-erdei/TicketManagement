@@ -21,6 +21,36 @@ public class UserDB {
 
     }
 
+    public UserDB(String username, String password, UserRole role, String token) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.token = token;
+    }
+
+    public UserDB(String username, String password, UserRole role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
+    public UserDB(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.role = user.getRole();
+    }
+
+    @Id
+    @GeneratedValue
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public UserRole getRole() {
         return role;
     }
@@ -45,44 +75,11 @@ public class UserDB {
         this.password = password;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Id
-    @GeneratedValue
-    public Long getId() {
-        return id;
-    }
-
     public String getToken() {
         return token;
     }
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public UserDB(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.role = user.getRole();
-        this.token = tokenGenerationStrategy();
-    }
-
-    String tokenGenerationStrategy() {
-
-        int targetStringLength = 10;
-        Random random = new Random();
-        StringBuilder buffer = new StringBuilder(targetStringLength);
-        for (int i = 0; i < targetStringLength; i++) {
-            int randomLimitedInt = (int)
-                    (random.nextFloat() * 255);
-            buffer.append((char) randomLimitedInt);
-        }
-        String generatedString = buffer.toString();
-
-        return generatedString;
     }
 }

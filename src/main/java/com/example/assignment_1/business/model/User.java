@@ -1,5 +1,6 @@
 package com.example.assignment_1.business.model;
 
+import com.example.assignment_1.data.model.UserDB;
 import com.example.assignment_1.data.model.UserRole;
 
 public class User {
@@ -8,6 +9,22 @@ public class User {
     private String username;
     private String password;
     protected UserRole role;
+
+    public User() {
+    }
+
+    public User(String username, String password, UserRole role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
+    public User(UserDB userDB) {
+        this.id = userDB.getId();
+        this.username = userDB.getUsername();
+        this.password = userDB.getPassword();
+        this.role = userDB.getRole();
+    }
 
     public Long getId() {
         return id;
