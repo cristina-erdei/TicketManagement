@@ -13,7 +13,7 @@ public class ConcertDB {
     private Long id;
 
     private ArtistDB artist;
-    private List<TicketDB> tickets;
+//    private List<TicketDB> tickets;
 
     private String title;
     private int maximumNumberOfTickets;
@@ -24,7 +24,7 @@ public class ConcertDB {
 
     public ConcertDB(ArtistDB artist, List<TicketDB> tickets, String title, int maximumNumberOfTickets, LocalDateTime dateAndTime, Genre genre) {
         this.artist = artist;
-        this.tickets = tickets;
+//        this.tickets = tickets;
         this.title = title;
         this.maximumNumberOfTickets = maximumNumberOfTickets;
         this.dateAndTime = dateAndTime;
@@ -34,7 +34,7 @@ public class ConcertDB {
     public ConcertDB(Concert concert){
         this.artist = new ArtistDB(concert.getArtist());
         this.title = concert.getTitle();
-        this.tickets = concert.getTickets().stream().map(TicketDB::new).collect(Collectors.toList());
+//        this.tickets = concert.getTickets().stream().map(TicketDB::new).collect(Collectors.toList());
         this.maximumNumberOfTickets = concert.getMaximumNumberOfTickets();
         this.dateAndTime = concert.getDateAndTime();
         this.genre = concert.getGenre();
@@ -58,7 +58,7 @@ public class ConcertDB {
         return id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     public ArtistDB getArtist() {
         return artist;
     }
@@ -90,22 +90,22 @@ public class ConcertDB {
     public void setDateAndTime(LocalDateTime dateAndTime) {
         this.dateAndTime = dateAndTime;
     }
-
-    @OneToMany(mappedBy = "concert")
-    public List<TicketDB> getTickets() {
-        return tickets;
-    }
-
-    public void setTickets(List<TicketDB> tickets) {
-        this.tickets = tickets;
-    }
+//
+//    @OneToMany(mappedBy = "concert")
+//    public List<TicketDB> getTickets() {
+//        return tickets;
+//    }
+//
+//    public void setTickets(List<TicketDB> tickets) {
+//        this.tickets = tickets;
+//    }
 
     @Override
     public String toString() {
         return "ConcertDB{" +
                 "id=" + id +
                 ", artist=" + artist +
-                ", tickets=" + tickets +
+//                ", tickets=" + tickets +
                 ", title='" + title + '\'' +
                 ", maximumNumberOfTickets=" + maximumNumberOfTickets +
                 ", dateAndTime=" + dateAndTime +

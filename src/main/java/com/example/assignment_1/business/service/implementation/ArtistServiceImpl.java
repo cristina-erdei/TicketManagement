@@ -46,7 +46,7 @@ public class ArtistServiceImpl implements ArtistService {
 
         ArtistDB artist = aux.get();
         artist.setName(newValue.getName());
-        artist.setConcerts(newValue.getConcerts().stream().map(ConcertDB::new).collect(Collectors.toList()));
+//        artist.setConcerts(newValue.getConcerts().stream().map(ConcertDB::new).collect(Collectors.toList()));
         artistRepository.save(artist);
         return true;
     }
@@ -63,8 +63,9 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     public List<Concert> getAllConcerts(Long artistId) {
-        Artist artist = findById(artistId);
-        if(artist == null || artist.getId() == null) return null;
-        return artist.getConcerts();
+//        Artist artist = findById(artistId);
+//        if(artist == null || artist.getId() == null) return null;
+//        return artist.getConcerts();
+        return null;
     }
 }
