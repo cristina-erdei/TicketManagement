@@ -64,6 +64,7 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     public List<Concert> getAllConcerts(Long artistId) {
         Artist artist = findById(artistId);
+        if(artist == null || artist.getId() == null) return null;
         return artist.getConcerts();
     }
 }

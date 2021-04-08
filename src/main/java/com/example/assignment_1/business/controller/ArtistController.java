@@ -2,10 +2,14 @@ package com.example.assignment_1.business.controller;
 
 import com.example.assignment_1.business.model.Artist;
 import com.example.assignment_1.business.model.Concert;
+import com.example.assignment_1.business.model.User;
 import com.example.assignment_1.business.service.implementation.ArtistServiceImpl;
+import com.example.assignment_1.business.service.implementation.UserServiceImpl;
 import com.example.assignment_1.business.service.interfaces.ArtistService;
+import com.example.assignment_1.business.service.interfaces.UserService;
 import com.example.assignment_1.data.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.quartz.QuartzTransactionManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,43 +24,73 @@ public class ArtistController {
 
     @Autowired
     private ArtistServiceImpl artistService;
+    @Autowired
+    private UserServiceImpl userService;
+
 
     @GetMapping("/getAll")
-    public List<Artist> findAll(){
+    public @ResponseBody List<Artist> findAll(){
         return artistService.findAll();
     }
 
-    @GetMapping("/get/{artistId}")
-    public Artist findById(@PathVariable Long artistId){
+    @GetMapping("/getById/{artistId}")
+    public @ResponseBody Artist findById(@PathVariable Long artistId){
         return artistService.findById(artistId);
     }
 
     @PostMapping("/create")
-    public void create(@RequestBody Artist artist){
-//        if (user.role != UserRole.Administrator) {
-//            return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT);
-//        }
+    public ResponseEntity create(@RequestBody Artist artist, @RequestHeader("Token") String token){
+        User requestingUser = userService.findByToken(token);
+
+        if (requestingUser.getRole() != UserRole.Administrator) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
 
         artistService.save(artist);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteAll")
-    public void deleteAll(){
+    public ResponseEntity deleteAll(@RequestHeader("Token") String token){
+        User requestingUser = userService.findByToken(token);
+
+        if (requestingUser.getRole() != UserRole.Administrator) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
         artistService.deleteAll();
+        return new ResponseEntity(HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{artistId}")
-    public void deleteById(@PathVariable Long artistId){
+    @DeleteMapping("/deleteById/{artistId}")
+    public ResponseEntity deleteById(@PathVariable Long artistId, @RequestHeader("Token") String token){
+        User requestingUser = userService.findByToken(token);
+
+        if (requestingUser.getRole() != UserRole.Administrator) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
         artistService.deleteById(artistId);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("/update/{artistId}")
-    public void update(@PathVariable Long artistId, @RequestBody Artist newValue){
+    @PostMapping("/updateById/{artistId}")
+    public ResponseEntity update(@PathVariable Long artistId, @RequestBody Artist newValue,@RequestHeader("Token") String token){
+        User requestingUser = userService.findByToken(token);
+
+        if (requestingUser.getRole() != UserRole.Administrator) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
         artistService.update(artistId, newValue);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("/getConcerts/{artistId}")
-    public List<Concert> getAllConcerts(@PathVariable Long artistId){
-        return artistService.getAllConcerts(artistId);
+    @GetMapping("/getArtistConcertsById/{artistId}")
+    public ResponseEntity<List<Concert>> getAllConcerts(@PathVariable Long artistId){
+        List<Concert> concerts = artistService.getAllConcerts(artistId);
+
+        if(concerts == null){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(concerts, HttpStatus.OK);
     }
 }

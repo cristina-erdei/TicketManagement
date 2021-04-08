@@ -19,8 +19,7 @@ public class UserController {
     private UserServiceImpl userService;
 
     @GetMapping("/getAll")
-    public @ResponseBody
-    ResponseEntity<List<User>> findAll(@RequestHeader("Token") String token) {
+    public ResponseEntity<List<User>> findAll(@RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
 
         if (requestingUser.getRole() != UserRole.Administrator) {
@@ -30,8 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/getById/{userId}")
-    public @ResponseBody
-    ResponseEntity<User> findById(@PathVariable Long userId, @RequestHeader("Token") String token) {
+    public ResponseEntity<User> findById(@PathVariable Long userId, @RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
 
         if (requestingUser.getRole() != UserRole.Administrator) {
@@ -42,8 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/getAllByRole/{role}")
-    public @ResponseBody
-    ResponseEntity<List<User>> findAllByRole(@PathVariable UserRole role, @RequestHeader("Token") String token) {
+    public ResponseEntity<List<User>> findAllByRole(@PathVariable UserRole role, @RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
 
         if (requestingUser.getRole() != UserRole.Administrator) {
@@ -54,76 +51,81 @@ public class UserController {
     }
 
     @GetMapping("/getByUsername/{username}")
-    public @ResponseBody
-    User findByUsername(@PathVariable String username) {
-        return userService.findByUsername(username);
+    public ResponseEntity<User> findByUsername(@PathVariable String username) {
+        User user = userService.findByUsername(username);
+        if (user == null || user.getId() == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+
     }
 
     @GetMapping("/getByToken/{token}")
-    public @ResponseBody
-    User findByToken(@PathVariable String token) {
-        return userService.findByToken(token);
+    public ResponseEntity<User> findByToken(@PathVariable String token) {
+        User user = userService.findByToken(token);
+
+        if (user == null || user.getId() == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("/create")
-    public @ResponseBody
-    ResponseEntity.BodyBuilder save(User user, @RequestHeader("Token") String token) {
+    public void save(User user) {
+        userService.save(user);
+    }
+
+    @PostMapping("/updateById/{id}")
+    public ResponseEntity update(@PathVariable Long id, @RequestBody User newValue, @RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
 
         if (requestingUser.getRole() != UserRole.Administrator) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
-        userService.save(user);
 
-        return ResponseEntity.status(HttpStatus.OK);
-    }
-
-    @PostMapping("/update/{id}")
-    public @ResponseBody
-    ResponseEntity.BodyBuilder update(@PathVariable Long id, @RequestBody User newValue) {
         boolean successful = userService.update(id, newValue);
 
-        if (!successful) return ResponseEntity.status(HttpStatus.BAD_REQUEST);
+        if (!successful) return new ResponseEntity(HttpStatus.BAD_REQUEST);
 
-        return ResponseEntity.status(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @PostMapping("/updateToken/{id}")
-    public @ResponseBody
-    ResponseEntity.BodyBuilder updateToken(@PathVariable Long id, @RequestBody String token) {
+    public ResponseEntity updateToken(@PathVariable Long id, @RequestBody String token) {
         boolean successful = userService.updateToken(id, token);
-        if (!successful) return ResponseEntity.status(HttpStatus.BAD_REQUEST);
+        if (!successful) return new ResponseEntity(HttpStatus.BAD_REQUEST);
 
-        return ResponseEntity.status(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
 
     }
 
     @DeleteMapping("/deleteAll")
-    public @ResponseBody
-    ResponseEntity.BodyBuilder deleteAll(@RequestHeader("Token") String token) {
+    public ResponseEntity deleteAll(@RequestHeader("Token") String token) {
 
         User requestingUser = userService.findByToken(token);
 
         if (requestingUser.getRole() != UserRole.Administrator) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
 
         userService.deleteAll();
 
-        return ResponseEntity.status(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{userId}")
-    public @ResponseBody
-    ResponseEntity.BodyBuilder deleteById(@PathVariable Long userId, @RequestHeader("Token") String token) {
+    @DeleteMapping("/deleteById/{userId}")
+    public
+    ResponseEntity deleteById(@PathVariable Long userId, @RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
 
         if (requestingUser.getRole() != UserRole.Administrator) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
 
         userService.deleteById(userId);
-        return ResponseEntity.status(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
 
     }
 

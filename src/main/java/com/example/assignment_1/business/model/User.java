@@ -2,6 +2,7 @@ package com.example.assignment_1.business.model;
 
 import com.example.assignment_1.data.model.UserDB;
 import com.example.assignment_1.data.model.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class User {
     private Long id;
@@ -20,10 +21,12 @@ public class User {
     }
 
     public User(UserDB userDB) {
-        this.id = userDB.getId();
-        this.username = userDB.getUsername();
-        this.password = userDB.getPassword();
-        this.role = userDB.getRole();
+        if (userDB != null) {
+            this.id = userDB.getId();
+            this.username = userDB.getUsername();
+            this.password = userDB.getPassword();
+            this.role = userDB.getRole();
+        }
     }
 
     public Long getId() {
@@ -42,6 +45,7 @@ public class User {
         this.username = username;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }

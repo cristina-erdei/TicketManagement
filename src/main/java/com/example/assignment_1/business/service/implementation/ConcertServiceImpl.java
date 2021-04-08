@@ -71,13 +71,18 @@ public class ConcertServiceImpl implements ConcertService {
     @Override
     public List<Ticket> getAllTickets(Long concertId) {
         Concert concert = findById(concertId);
+        if(concert == null || concert.getId() == null) return null;
         return concert.getTickets();
     }
 
     @Override
     public int getAvailableSeats(Long concertId) {
         Concert concert = findById(concertId);
-        int soldTickets = getAllTickets(concertId).size();
+        if(concert == null || concert.getId() == null) return -1;
+        List<Ticket> tickets = getAllTickets(concertId);
+        if(tickets == null) return -1;
+
+        int soldTickets = tickets.size();
         return concert.getMaximumNumberOfTickets() - soldTickets;
     }
 }
