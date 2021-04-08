@@ -1,5 +1,6 @@
 package com.example.assignment_1.business.service.implementation;
 
+import com.example.assignment_1.business.model.Artist;
 import com.example.assignment_1.business.model.Concert;
 import com.example.assignment_1.business.model.Ticket;
 import com.example.assignment_1.business.service.interfaces.ConcertService;
@@ -7,6 +8,7 @@ import com.example.assignment_1.data.model.ArtistDB;
 import com.example.assignment_1.data.model.ConcertDB;
 import com.example.assignment_1.data.model.TicketDB;
 import com.example.assignment_1.data.repository.ConcertRepository;
+import com.example.assignment_1.data.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,10 @@ public class ConcertServiceImpl implements ConcertService {
     @Autowired
     private ConcertRepository concertRepository;
 
+    @Autowired
+    private TicketServiceImpl ticketService;
+
+
     @Override
     public List<Concert> findAll() {
         return concertRepository.findAll().stream().map(Concert::new).collect(Collectors.toList());
@@ -32,6 +38,11 @@ public class ConcertServiceImpl implements ConcertService {
     public Concert findById(Long concertId) {
         Optional<ConcertDB> concert = concertRepository.findById(concertId);
         return concert.map(Concert::new).orElse(null);
+    }
+
+    @Override
+    public List<Concert> findAllByArtist(Artist artist) {
+        return concertRepository.findAllByArtist(new ArtistDB(artist)).stream().map(Concert::new).collect(Collectors.toList());
     }
 
     @Override
@@ -48,7 +59,6 @@ public class ConcertServiceImpl implements ConcertService {
         ConcertDB concert = aux.get();
 
         concert.setArtist(new ArtistDB(newValue.getArtist()));
-        concert.setTickets(newValue.getTickets().stream().map(TicketDB::new).collect(Collectors.toList()));
         concert.setTitle(newValue.getTitle());
         concert.setMaximumNumberOfTickets(newValue.getMaximumNumberOfTickets());
         concert.setDateAndTime(newValue.getDateAndTime());
@@ -70,9 +80,11 @@ public class ConcertServiceImpl implements ConcertService {
 
     @Override
     public List<Ticket> getAllTickets(Long concertId) {
-        Concert concert = findById(concertId);
-        if(concert == null || concert.getId() == null) return null;
-        return concert.getTickets();
+        Optional<ConcertDB> optionalConcert = concertRepository.findById(concertId);
+        if (optionalConcert.isEmpty()) return null;
+        ConcertDB concertDB = optionalConcert.get();
+
+        return ticketService.findAllByConcert(concertDB);
     }
 
     @Override

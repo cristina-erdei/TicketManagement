@@ -2,10 +2,7 @@ package com.example.assignment_1.data.model;
 
 import com.example.assignment_1.business.model.Ticket;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 public class TicketDB {
@@ -23,8 +20,11 @@ public class TicketDB {
     }
 
     public TicketDB(Ticket ticket){
+        System.out.println("entering ticket contructor");
+        this.id = ticket.getId();
         this.concert = new ConcertDB(ticket.getConcert());
         this.numberOfSeats = ticket.getNumberOfSeats();
+        System.out.println("exiting ticket contructor");
     }
 
     @ManyToOne
@@ -52,5 +52,14 @@ public class TicketDB {
     @GeneratedValue
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "TicketDB{" +
+                "id=" + id +
+                ", concert=" + concert +
+                ", numberOfSeats=" + numberOfSeats +
+                '}';
     }
 }

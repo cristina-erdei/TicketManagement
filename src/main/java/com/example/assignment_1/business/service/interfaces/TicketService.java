@@ -1,6 +1,9 @@
 package com.example.assignment_1.business.service.interfaces;
 
+import com.example.assignment_1.business.model.Concert;
 import com.example.assignment_1.business.model.Ticket;
+import com.example.assignment_1.data.model.ConcertDB;
+import com.example.assignment_1.data.model.TicketDB;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +12,11 @@ import java.util.List;
 public interface TicketService {
     List<Ticket> findAll();
 
+    List<Ticket> findAllByConcert(ConcertDB concert);
+
     Ticket findById(Long ticketId);
 
-    void save(Ticket ticket);
+    TicketDB save(Ticket ticket);
 
     boolean update(Long id, Ticket newValue);
 

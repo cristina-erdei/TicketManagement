@@ -45,4 +45,13 @@ public class Ticket {
     public void setNumberOfSeats(int numberOfSeats) {
         this.numberOfSeats = numberOfSeats;
     }
+
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "id=" + id +
+                ", concert=" + concert +
+                ", numberOfSeats=" + numberOfSeats +
+                '}';
+    }
 }

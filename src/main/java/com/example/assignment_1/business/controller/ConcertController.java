@@ -43,32 +43,30 @@ public class ConcertController {
 
     @PostMapping("/create")
     public @ResponseBody
-    ResponseEntity<ConcertDB> create(@RequestBody ConcertRequestModel concert, @RequestHeader("Token") String token) {
+    ResponseEntity<ConcertDB> create(@RequestBody ConcertRequestModel concertRequestModel, @RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
-        System.out.println("found user");
         if (requestingUser.getRole() != UserRole.Administrator) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
-        System.out.println("authorized user");
 
-        Concert concert1 = new Concert();
-        concert1.setGenre(concert.getGenre());
-        concert1.setTitle(concert.getTitle());
-        concert1.setTickets(new ArrayList<>());
-        concert1.setMaximumNumberOfTickets(concert.getMaximumNumberOfTickets());
-        System.out.println("concert1 = " + concert1);
-        Artist artist = artistService.findById(concert.getArtistId());
+        Concert concert = new Concert();
+        concert.setGenre(concertRequestModel.getGenre());
+        concert.setTitle(concertRequestModel.getTitle());
+        concert.setMaximumNumberOfTickets(concertRequestModel.getMaximumNumberOfTickets());
+        Artist artist = artistService.findById(concertRequestModel.getArtistId());
 
-        if(artist == null || artist.getId() == null){
+        if (artist == null || artist.getId() == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-        System.out.println("artist = " + artist);
-        concert1.setArtist(artist);
-        concert1.setDateAndTime(LocalDateTime.now());
-        System.out.println("concert1 = " + concert1);
+        concert.setArtist(artist);
+        concert.setDateAndTime(LocalDateTime.of(concertRequestModel.getYear(),
+                                                concertRequestModel.getMonth(),
+                                                concertRequestModel.getDay(),
+                                                concertRequestModel.getHour(),
+                                                concertRequestModel.getMinute()));
 
-        return new ResponseEntity<>(concertService.save(concert1), HttpStatus.OK);
+        return new ResponseEntity<>(concertService.save(concert), HttpStatus.OK);
     }
 
     @PostMapping("/updateById/{id}")

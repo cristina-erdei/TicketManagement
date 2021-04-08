@@ -2,17 +2,14 @@ package com.example.assignment_1.business.model;
 
 import com.example.assignment_1.data.model.ConcertDB;
 import com.example.assignment_1.data.model.Genre;
-import org.springframework.context.annotation.Lazy;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Concert {
     private Long id;
 
     private Artist artist;
-//    private List<Ticket> tickets;
 
     private String title;
     private int maximumNumberOfTickets;
@@ -23,9 +20,8 @@ public class Concert {
     public Concert() {
     }
 
-    public Concert(Artist artist, List<Ticket> tickets, String title, int maximumNumberOfTickets, LocalDateTime dateAndTime, Genre genre) {
+    public Concert(Artist artist, String title, int maximumNumberOfTickets, LocalDateTime dateAndTime, Genre genre) {
         this.artist = artist;
-//        this.tickets = tickets;
         this.title = title;
         this.maximumNumberOfTickets = maximumNumberOfTickets;
         this.dateAndTime = dateAndTime;
@@ -35,22 +31,12 @@ public class Concert {
     public Concert(ConcertDB concertDB){
         this.id = concertDB.getId();
         this.artist = new Artist(concertDB.getArtist());
-//        this.tickets = concertDB.getTickets().stream().map(Ticket::new).collect(Collectors.toList());
         this.title = concertDB.getTitle();
         this.maximumNumberOfTickets = concertDB.getMaximumNumberOfTickets();
         this.dateAndTime = concertDB.getDateAndTime();
         this.genre = concertDB.getGenre();
 ;
     }
-
-//
-//    public List<Ticket> getTickets() {
-//        return tickets;
-//    }
-//
-//    public void setTickets(List<Ticket> tickets) {
-//        this.tickets = tickets;
-//    }
 
     public Long getId() {
         return id;
@@ -105,7 +91,6 @@ public class Concert {
         return "Concert{" +
                 "id=" + id +
                 ", artist=" + artist +
-//                ", tickets=" + tickets +
                 ", title='" + title + '\'' +
                 ", maximumNumberOfTickets=" + maximumNumberOfTickets +
                 ", dateAndTime=" + dateAndTime +

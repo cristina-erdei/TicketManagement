@@ -15,20 +15,18 @@ public class ArtistDB {
 
     private String name;
 
-//    private List<ConcertDB> concerts;
-
     public ArtistDB(){
     }
 
-    public ArtistDB(String name){//, List<ConcertDB> concerts) {
+    public ArtistDB(String name){
         this.name = name;
-//        this.concerts = concerts;
     }
 
     public ArtistDB(Artist artist){
+        System.out.println("entering artist constructor");
         this.id = artist.getId();
         this.name = artist.getName();
-//        this.concerts = artist.getConcerts().stream().map(ConcertDB::new).collect(Collectors.toList());
+        System.out.println("exiting artist constructor");
     }
 
     public void setId(Long id) {
@@ -49,12 +47,11 @@ public class ArtistDB {
         this.name = name;
     }
 
-//    @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY)
-//    public List<ConcertDB> getConcerts() {
-//        return concerts;
-//    }
-
-//    public void setConcerts(List<ConcertDB> concert) {
-//        this.concerts = concert;
-//    }
+    @Override
+    public String toString() {
+        return "ArtistDB{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

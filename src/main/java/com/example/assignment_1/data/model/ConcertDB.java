@@ -13,7 +13,6 @@ public class ConcertDB {
     private Long id;
 
     private ArtistDB artist;
-//    private List<TicketDB> tickets;
 
     private String title;
     private int maximumNumberOfTickets;
@@ -22,9 +21,8 @@ public class ConcertDB {
 
     public ConcertDB(){}
 
-    public ConcertDB(ArtistDB artist, List<TicketDB> tickets, String title, int maximumNumberOfTickets, LocalDateTime dateAndTime, Genre genre) {
+    public ConcertDB(ArtistDB artist,  String title, int maximumNumberOfTickets, LocalDateTime dateAndTime, Genre genre) {
         this.artist = artist;
-//        this.tickets = tickets;
         this.title = title;
         this.maximumNumberOfTickets = maximumNumberOfTickets;
         this.dateAndTime = dateAndTime;
@@ -32,12 +30,14 @@ public class ConcertDB {
     }
 
     public ConcertDB(Concert concert){
+        System.out.println("entering concert constructor");
+        this.id = concert.getId();
         this.artist = new ArtistDB(concert.getArtist());
         this.title = concert.getTitle();
-//        this.tickets = concert.getTickets().stream().map(TicketDB::new).collect(Collectors.toList());
         this.maximumNumberOfTickets = concert.getMaximumNumberOfTickets();
         this.dateAndTime = concert.getDateAndTime();
         this.genre = concert.getGenre();
+        System.out.println("exiting concert constructor");
     }
 
     public Genre getGenre() {
@@ -58,7 +58,7 @@ public class ConcertDB {
         return id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     public ArtistDB getArtist() {
         return artist;
     }
@@ -90,22 +90,12 @@ public class ConcertDB {
     public void setDateAndTime(LocalDateTime dateAndTime) {
         this.dateAndTime = dateAndTime;
     }
-//
-//    @OneToMany(mappedBy = "concert")
-//    public List<TicketDB> getTickets() {
-//        return tickets;
-//    }
-//
-//    public void setTickets(List<TicketDB> tickets) {
-//        this.tickets = tickets;
-//    }
 
     @Override
     public String toString() {
         return "ConcertDB{" +
                 "id=" + id +
                 ", artist=" + artist +
-//                ", tickets=" + tickets +
                 ", title='" + title + '\'' +
                 ", maximumNumberOfTickets=" + maximumNumberOfTickets +
                 ", dateAndTime=" + dateAndTime +

@@ -9,4 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ConcertRepository extends JpaRepository<ConcertDB, Long> {
+    public List<ConcertDB> findAllByArtist(ArtistDB artistDB);
 }

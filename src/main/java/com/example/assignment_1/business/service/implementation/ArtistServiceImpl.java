@@ -4,7 +4,6 @@ import com.example.assignment_1.business.model.Artist;
 import com.example.assignment_1.business.model.Concert;
 import com.example.assignment_1.business.service.interfaces.ArtistService;
 import com.example.assignment_1.data.model.ArtistDB;
-import com.example.assignment_1.data.model.ConcertDB;
 import com.example.assignment_1.data.repository.ArtistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,6 +20,9 @@ public class ArtistServiceImpl implements ArtistService {
     @Qualifier("artistRepository")
     @Autowired
     private ArtistRepository artistRepository;
+    @Autowired
+    private ConcertServiceImpl concertService;
+
 
     @Override
     public List<Artist> findAll() {
@@ -46,7 +48,6 @@ public class ArtistServiceImpl implements ArtistService {
 
         ArtistDB artist = aux.get();
         artist.setName(newValue.getName());
-//        artist.setConcerts(newValue.getConcerts().stream().map(ConcertDB::new).collect(Collectors.toList()));
         artistRepository.save(artist);
         return true;
     }
@@ -63,9 +64,9 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     public List<Concert> getAllConcerts(Long artistId) {
-//        Artist artist = findById(artistId);
-//        if(artist == null || artist.getId() == null) return null;
-//        return artist.getConcerts();
-        return null;
+        Artist artist = findById(artistId);
+        if(artist == null || artist.getId() == null) return null;
+
+        return concertService.findAllByArtist(artist);
     }
 }

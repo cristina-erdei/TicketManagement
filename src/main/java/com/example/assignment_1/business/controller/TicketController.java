@@ -2,10 +2,12 @@ package com.example.assignment_1.business.controller;
 
 import com.example.assignment_1.business.model.Concert;
 import com.example.assignment_1.business.model.Ticket;
+import com.example.assignment_1.business.model.TicketRequestModel;
 import com.example.assignment_1.business.model.User;
 import com.example.assignment_1.business.service.implementation.TicketServiceImpl;
 import com.example.assignment_1.business.service.implementation.UserServiceImpl;
 import com.example.assignment_1.business.service.interfaces.UserService;
+import com.example.assignment_1.data.model.TicketDB;
 import com.example.assignment_1.data.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,31 +44,59 @@ public class TicketController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity create(@RequestBody Ticket ticket) {
-        if (ticket == null || ticket.getConcert() == null || ticket.getNumberOfSeats() <= 0) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<TicketDB> create(@RequestBody TicketRequestModel ticket, @RequestHeader("Token") String token) {
+        User requestingUser = userService.findByToken(token);
+        System.out.println("found user");
+        if (requestingUser.getRole() != UserRole.Administrator) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        System.out.println("authorized user");
+
+
+        if (ticket == null || ticket.getConcertId() == null || ticket.getNumberOfSeats() <= 0) {
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
         }
 
-        Concert concert = concertController.findById(ticket.getConcert().getId());
+        System.out.println("ticket params ok");
+
+        Concert concert = concertController.findById(ticket.getConcertId());
         if(concert == null || concert.getId() == null){
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            System.out.println("bad concert");
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
+        System.out.println("found ok concert");
+        System.out.println("concert = " + concert);
 
-        ResponseEntity<Integer> availableSeatsResponse = concertController.getAvailableSeats(ticket.getConcert().getId());
+
+        ResponseEntity<Integer> availableSeatsResponse = concertController.getAvailableSeats(ticket.getConcertId());
         Integer availableSeats = availableSeatsResponse.getBody();
 
         if(availableSeats == -1){
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            System.out.println("cannot get available seats");
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
         }
+        System.out.println("found available seats = ");
+        System.out.println("availableSeats = " + availableSeats);
 
         if (availableSeats < ticket.getNumberOfSeats()) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            System.out.println("not enough seats");
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        ticketService.save(ticket);
+        System.out.println("enoguh seats");
 
-        return new ResponseEntity(HttpStatus.OK);
+        Ticket ticket1 = new Ticket();
+        ticket1.setNumberOfSeats(ticket.getNumberOfSeats());
+        ticket1.setConcert(concert);
+
+        System.out.println("ticket1 = " + ticket1);
+
+        TicketDB saved = ticketService.save(ticket1);
+
+        System.out.println("saved = " + saved);
+
+        return new ResponseEntity<>(saved, HttpStatus.OK);
     }
 
     @PostMapping("updateById/{id}")
