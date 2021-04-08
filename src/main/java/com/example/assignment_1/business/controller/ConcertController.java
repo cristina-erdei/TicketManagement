@@ -1,18 +1,21 @@
 package com.example.assignment_1.business.controller;
 
-import com.example.assignment_1.business.model.Concert;
-import com.example.assignment_1.business.model.Ticket;
-import com.example.assignment_1.business.model.User;
+import com.example.assignment_1.business.model.*;
+import com.example.assignment_1.business.service.implementation.ArtistServiceImpl;
 import com.example.assignment_1.business.service.implementation.ConcertServiceImpl;
 import com.example.assignment_1.business.service.implementation.UserServiceImpl;
 import com.example.assignment_1.business.service.interfaces.UserService;
+import com.example.assignment_1.data.model.ConcertDB;
 import com.example.assignment_1.data.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,6 +25,8 @@ public class ConcertController {
     private ConcertServiceImpl concertService;
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private ArtistServiceImpl artistService;
 
 
     @GetMapping("/getAll")
@@ -37,16 +42,33 @@ public class ConcertController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity create(@RequestBody Concert concert, @RequestHeader("Token") String token) {
+    public @ResponseBody
+    ResponseEntity<ConcertDB> create(@RequestBody ConcertRequestModel concert, @RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
-
+        System.out.println("found user");
         if (requestingUser.getRole() != UserRole.Administrator) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
-        concertService.save(concert);
+        System.out.println("authorized user");
 
-        return new ResponseEntity(HttpStatus.OK);
+        Concert concert1 = new Concert();
+        concert1.setGenre(concert.getGenre());
+        concert1.setTitle(concert.getTitle());
+        concert1.setTickets(new ArrayList<>());
+        concert1.setMaximumNumberOfTickets(concert.getMaximumNumberOfTickets());
+        System.out.println("concert1 = " + concert1);
+        Artist artist = artistService.findById(concert.getArtistId());
+
+        if(artist == null || artist.getId() == null){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        System.out.println("artist = " + artist);
+        concert1.setArtist(artist);
+        concert1.setDateAndTime(LocalDateTime.now());
+        System.out.println("concert1 = " + concert1);
+
+        return new ResponseEntity<>(concertService.save(concert1), HttpStatus.OK);
     }
 
     @PostMapping("/updateById/{id}")

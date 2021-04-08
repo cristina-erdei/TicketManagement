@@ -49,4 +49,13 @@ public class Artist {
     public void setConcerts(List<Concert> concerts) {
         this.concerts = concerts;
     }
+
+    @Override
+    public String toString() {
+        return "Artist{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", concerts=" + concerts +
+                '}';
+    }
 }

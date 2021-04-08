@@ -2,6 +2,7 @@ package com.example.assignment_1.business.controller;
 
 import com.example.assignment_1.business.model.User;
 import com.example.assignment_1.business.service.implementation.UserServiceImpl;
+import com.example.assignment_1.data.model.UserDB;
 import com.example.assignment_1.data.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -34,6 +36,12 @@ public class UserController {
 
         if (requestingUser.getRole() != UserRole.Administrator) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = userService.findById(userId);
+
+        if (user == null || user.getId() == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(userService.findById(userId), HttpStatus.OK);
@@ -73,7 +81,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public void save(User user) {
+    public void save(@RequestBody User user) {
         userService.save(user);
     }
 
@@ -101,27 +109,17 @@ public class UserController {
 
     }
 
-    @DeleteMapping("/deleteAll")
-    public ResponseEntity deleteAll(@RequestHeader("Token") String token) {
-
+    @DeleteMapping("/deleteById/{userId}")
+    public ResponseEntity deleteById(@PathVariable Long userId, @RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
 
         if (requestingUser.getRole() != UserRole.Administrator) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
 
-        userService.deleteAll();
-
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-    @DeleteMapping("/deleteById/{userId}")
-    public
-    ResponseEntity deleteById(@PathVariable Long userId, @RequestHeader("Token") String token) {
-        User requestingUser = userService.findByToken(token);
-
-        if (requestingUser.getRole() != UserRole.Administrator) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        User user = userService.findById(userId);
+        if(user == null || user.getId() == null){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
         userService.deleteById(userId);

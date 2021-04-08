@@ -35,8 +35,8 @@ public class ConcertServiceImpl implements ConcertService {
     }
 
     @Override
-    public void save(Concert concert) {
-        concertRepository.save(new ConcertDB(concert));
+    public ConcertDB save(Concert concert) {
+        return concertRepository.save(new ConcertDB(concert));
     }
 
     @Override

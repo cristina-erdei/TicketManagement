@@ -50,7 +50,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User user) {
-        userRepository.save(new UserDB(user));
+        UserDB userDB = new UserDB(user);
+        userRepository.save(userDB);
     }
 
     @Override
@@ -60,9 +61,9 @@ public class UserServiceImpl implements UserService {
         if(aux.isEmpty()) return false;
 
         UserDB user = aux.get();
-        user.setUsername(newValue.getUsername());
-        user.setPassword(newValue.getPassword());
-        user.setRole(newValue.getRole());
+        if(newValue.getUsername() != null) user.setUsername(newValue.getUsername());
+        if(newValue.getPassword() != null) user.setPassword(newValue.getPassword());
+        if(newValue.getRole() != null) user.setRole(newValue.getRole());
         userRepository.save(user);
         return true;
     }
@@ -77,11 +78,6 @@ public class UserServiceImpl implements UserService {
         user.setToken(token);
         userRepository.save(user);
         return true;
-    }
-
-    @Override
-    public void deleteAll() {
-        userRepository.deleteAll();
     }
 
     @Override

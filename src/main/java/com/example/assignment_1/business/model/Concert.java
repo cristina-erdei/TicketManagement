@@ -98,4 +98,17 @@ public class Concert {
     public void setGenre(Genre genre) {
         this.genre = genre;
     }
+
+    @Override
+    public String toString() {
+        return "Concert{" +
+                "id=" + id +
+                ", artist=" + artist +
+                ", tickets=" + tickets +
+                ", title='" + title + '\'' +
+                ", maximumNumberOfTickets=" + maximumNumberOfTickets +
+                ", dateAndTime=" + dateAndTime +
+                ", genre=" + genre +
+                '}';
+    }
 }

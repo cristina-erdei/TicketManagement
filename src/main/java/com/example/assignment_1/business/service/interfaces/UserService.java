@@ -16,6 +16,5 @@ public interface UserService {
     void save(User user);
     boolean update(Long id, User newValue);
     boolean updateToken(Long id, String token);
-    void deleteAll();
     void deleteById(Long userId);
 }

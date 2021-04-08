@@ -21,19 +21,23 @@ public class AuthController {
     private UserServiceImpl userService;
 
     @PostMapping("/login")
-    public @ResponseBody
-    String login(@RequestBody LoginRequestModel loginRequestModel) {
+    public
+    ResponseEntity<String> login(@RequestBody LoginRequestModel loginRequestModel) {
         User user = userService.findByUsername(loginRequestModel.getUsername());
 
         if (!Objects.equals(user.getPassword(), loginRequestModel.getPassword())) {
-            return null;
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
         String token = generateNewToken();
 
-        userService.updateToken(user.getId(), token);
+        boolean success = userService.updateToken(user.getId(), token);
 
-        return token;
+        if(!success){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     private static final SecureRandom secureRandom = new SecureRandom(); //threadsafe
@@ -52,12 +56,12 @@ public class AuthController {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
 
-        System.out.println("userService.updateToken(user.getId(), null) = " + userService.updateToken(user.getId(), null));
-        var result =new ResponseEntity(HttpStatus.OK);
-        System.out.println("result = " + result);
+        boolean success = userService.updateToken(user.getId(), null);
+        if(!success) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
 
-        return result;
-
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
 

@@ -1,6 +1,7 @@
 package com.example.assignment_1.data.model;
 
 import com.example.assignment_1.business.model.Concert;
+import org.springframework.context.annotation.Lazy;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -97,5 +98,18 @@ public class ConcertDB {
 
     public void setTickets(List<TicketDB> tickets) {
         this.tickets = tickets;
+    }
+
+    @Override
+    public String toString() {
+        return "ConcertDB{" +
+                "id=" + id +
+                ", artist=" + artist +
+                ", tickets=" + tickets +
+                ", title='" + title + '\'' +
+                ", maximumNumberOfTickets=" + maximumNumberOfTickets +
+                ", dateAndTime=" + dateAndTime +
+                ", genre=" + genre +
+                '}';
     }
 }
