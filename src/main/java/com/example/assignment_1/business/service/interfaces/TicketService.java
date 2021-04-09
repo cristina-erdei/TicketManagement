@@ -1,7 +1,7 @@
 package com.example.assignment_1.business.service.interfaces;
 
-import com.example.assignment_1.business.model.Concert;
 import com.example.assignment_1.business.model.Ticket;
+import com.example.assignment_1.business.model.TicketCreateModel;
 import com.example.assignment_1.data.model.ConcertDB;
 import com.example.assignment_1.data.model.TicketDB;
 import org.springframework.stereotype.Service;
@@ -18,9 +18,7 @@ public interface TicketService {
 
     TicketDB save(Ticket ticket);
 
-    boolean update(Long id, Ticket newValue);
-
-    void deleteAll();
+    Ticket update(Long id, TicketCreateModel newValue);
 
     void deleteById(Long ticketId);
 }

@@ -3,19 +3,17 @@ package com.example.assignment_1.business.controller;
 import com.example.assignment_1.business.model.LoginRequestModel;
 import com.example.assignment_1.business.model.User;
 import com.example.assignment_1.business.service.implementation.UserServiceImpl;
+import com.example.assignment_1.helper.TokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.Objects;
 
 @RestController
 @RequestMapping("/authentication")
 public class AuthController {
-
 
     @Autowired
     private UserServiceImpl userService;
@@ -29,7 +27,7 @@ public class AuthController {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
-        String token = generateNewToken();
+        String token = TokenGenerator.generateNewToken();
 
         boolean success = userService.updateToken(user.getId(), token);
 
@@ -40,28 +38,19 @@ public class AuthController {
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
-    private static final SecureRandom secureRandom = new SecureRandom(); //threadsafe
-    private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
-
-    private String generateNewToken() {
-        byte[] randomBytes = new byte[24];
-        secureRandom.nextBytes(randomBytes);
-        return base64Encoder.encodeToString(randomBytes);
-    }
-
     @GetMapping("/logout")
-    public ResponseEntity logout(@RequestHeader("Token") String token) {
+    public ResponseEntity<User> logout(@RequestHeader("Token") String token) {
         User user = userService.findByToken(token);
         if (user == null || user.getId() == null) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
         boolean success = userService.updateToken(user.getId(), null);
         if(!success) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }
 

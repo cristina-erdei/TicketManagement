@@ -1,12 +1,10 @@
 package com.example.assignment_1.data.model;
 
 import com.example.assignment_1.business.model.Concert;
-import org.springframework.context.annotation.Lazy;
+import com.example.assignment_1.helper.Genre;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class ConcertDB {

@@ -2,10 +2,8 @@ package com.example.assignment_1;
 
 import com.example.assignment_1.business.controller.UserController;
 import com.example.assignment_1.business.model.User;
-import com.example.assignment_1.business.service.interfaces.UserService;
-import com.example.assignment_1.data.model.UserRole;
+import com.example.assignment_1.helper.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;

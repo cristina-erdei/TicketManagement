@@ -36,25 +36,19 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public void save(Artist artist) {
-        artistRepository.save(new ArtistDB(artist));
+    public ArtistDB save(Artist artist) {
+        return artistRepository.save(new ArtistDB(artist));
     }
 
     @Override
-    public boolean update(Long id, Artist newValue) {
+    public Artist update(Long id, Artist newValue) {
         Optional<ArtistDB> aux = artistRepository.findById(id);
 
-        if(aux.isEmpty()) return false;
+        if(aux.isEmpty()) return null;
 
         ArtistDB artist = aux.get();
         artist.setName(newValue.getName());
-        artistRepository.save(artist);
-        return true;
-    }
-
-    @Override
-    public void deleteAll() {
-        artistRepository.deleteAll();
+        return new Artist(artistRepository.save(artist));
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.assignment_1.business.service.implementation;
 
 import com.example.assignment_1.business.model.Concert;
 import com.example.assignment_1.business.model.Ticket;
+import com.example.assignment_1.business.model.TicketCreateModel;
 import com.example.assignment_1.business.service.interfaces.TicketService;
 import com.example.assignment_1.data.model.ConcertDB;
 import com.example.assignment_1.data.model.TicketDB;
@@ -21,6 +22,9 @@ public class TicketServiceImpl implements TicketService {
     @Qualifier("ticketRepository")
     @Autowired
     private TicketRepository ticketRepository;
+    @Autowired
+    private ConcertServiceImpl concertService;
+
 
     @Override
     public List<Ticket> findAll() {
@@ -40,32 +44,27 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketDB save(Ticket ticket) {
-        System.out.println("entered service save");
         TicketDB toSave = new TicketDB(ticket);
-        System.out.println("toSave = " + toSave);
-        TicketDB save = ticketRepository.save(toSave);
-        System.out.println("save = " + save);
-        System.out.println("exiting service saved");
-        return save;
+        return ticketRepository.save(toSave);
     }
 
     @Override
-    public boolean update(Long id, Ticket newValue) {
+    public Ticket update(Long id, TicketCreateModel newValue) {
         Optional<TicketDB> aux = ticketRepository.findById(id);
+        if(aux.isEmpty()) return null;
 
-        if(aux.isEmpty()) return false;
+        Concert concert = concertService.findById(newValue.getConcertId());
+        if(concert == null) return null;
+
+        int availableSeats = concertService.getAvailableSeats(newValue.getConcertId());
+        if(availableSeats == -1 || newValue.getNumberOfSeats() > availableSeats) return null;
 
         TicketDB ticket = aux.get();
-        ticket.setConcert(new ConcertDB(newValue.getConcert()));
+        ticket.setConcert(new ConcertDB(concert));
         ticket.setNumberOfSeats(newValue.getNumberOfSeats());
-        ticketRepository.save(ticket);
-        return true;
 
-    }
 
-    @Override
-    public void deleteAll() {
-        ticketRepository.deleteAll();
+        return new Ticket(ticketRepository.save(ticket));
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.example.assignment_1.business.model;
 
-public class TicketRequestModel {
+public class TicketCreateModel {
     private int numberOfSeats;
     private Long concertId;
 

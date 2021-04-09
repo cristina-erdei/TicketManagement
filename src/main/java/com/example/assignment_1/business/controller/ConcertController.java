@@ -4,18 +4,14 @@ import com.example.assignment_1.business.model.*;
 import com.example.assignment_1.business.service.implementation.ArtistServiceImpl;
 import com.example.assignment_1.business.service.implementation.ConcertServiceImpl;
 import com.example.assignment_1.business.service.implementation.UserServiceImpl;
-import com.example.assignment_1.business.service.interfaces.UserService;
 import com.example.assignment_1.data.model.ConcertDB;
-import com.example.assignment_1.data.model.UserRole;
+import com.example.assignment_1.helper.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,14 +32,18 @@ public class ConcertController {
     }
 
     @GetMapping("/getById/{concertId}")
-    public @ResponseBody
-    Concert findById(@PathVariable Long concertId) {
-        return concertService.findById(concertId);
+    public ResponseEntity<Concert> findById(@PathVariable Long concertId) {
+        Concert concert = concertService.findById(concertId);
+        if(concert == null){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(concert, HttpStatus.OK);
     }
 
     @PostMapping("/create")
     public @ResponseBody
-    ResponseEntity<ConcertDB> create(@RequestBody ConcertRequestModel concertRequestModel, @RequestHeader("Token") String token) {
+    ResponseEntity<ConcertDB> create(@RequestBody ConcertCreateModel concertCreateModel, @RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
         if (requestingUser.getRole() != UserRole.Administrator) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
@@ -51,61 +51,50 @@ public class ConcertController {
 
 
         Concert concert = new Concert();
-        concert.setGenre(concertRequestModel.getGenre());
-        concert.setTitle(concertRequestModel.getTitle());
-        concert.setMaximumNumberOfTickets(concertRequestModel.getMaximumNumberOfTickets());
-        Artist artist = artistService.findById(concertRequestModel.getArtistId());
+        concert.setGenre(concertCreateModel.getGenre());
+        concert.setTitle(concertCreateModel.getTitle());
+        concert.setMaximumNumberOfTickets(concertCreateModel.getMaximumNumberOfTickets());
+        Artist artist = artistService.findById(concertCreateModel.getArtistId());
 
         if (artist == null || artist.getId() == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         concert.setArtist(artist);
-        concert.setDateAndTime(LocalDateTime.of(concertRequestModel.getYear(),
-                                                concertRequestModel.getMonth(),
-                                                concertRequestModel.getDay(),
-                                                concertRequestModel.getHour(),
-                                                concertRequestModel.getMinute()));
+        concert.setDateAndTime(LocalDateTime.of(concertCreateModel.getYear(),
+                                                concertCreateModel.getMonth(),
+                                                concertCreateModel.getDay(),
+                                                concertCreateModel.getHour(),
+                                                concertCreateModel.getMinute()));
 
         return new ResponseEntity<>(concertService.save(concert), HttpStatus.OK);
     }
 
     @PostMapping("/updateById/{id}")
-    public ResponseEntity update(@PathVariable Long id, @RequestBody Concert updatedValue, @RequestHeader("Token") String token) {
+    public ResponseEntity<Concert> update(@PathVariable Long id, @RequestBody ConcertCreateModel updateValue, @RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
-
         if (requestingUser.getRole() != UserRole.Administrator) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
         }
-        boolean success = concertService.update(id, updatedValue);
-        if (!success) return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        Concert updated = concertService.update(id, updateValue);
+        if (updated == null) return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-    @DeleteMapping("/deleteAll")
-    public ResponseEntity deleteAll(@RequestHeader("Token") String token) {
-
-        User requestingUser = userService.findByToken(token);
-
-        if (requestingUser.getRole() != UserRole.Administrator) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-        }
-
-        concertService.deleteAll();
-
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteById/{concertId}")
-    public ResponseEntity delete(@PathVariable Long concertId, @RequestHeader("Token") String token) {
+    public ResponseEntity<Concert> deleteById(@PathVariable Long concertId, @RequestHeader("Token") String token) {
 
         User requestingUser = userService.findByToken(token);
-
         if (requestingUser.getRole() != UserRole.Administrator) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
+        }
+
+        Concert concert = concertService.findById(concertId);
+        if(concert == null || concert.getId() == null){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         concertService.deleteById(concertId);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(concert, HttpStatus.OK);
     }
 
     @GetMapping("/getTickets/{id}")

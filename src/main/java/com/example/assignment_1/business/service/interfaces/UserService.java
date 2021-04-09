@@ -1,7 +1,7 @@
 package com.example.assignment_1.business.service.interfaces;
 
 import com.example.assignment_1.business.model.User;
-import com.example.assignment_1.data.model.UserRole;
+import com.example.assignment_1.helper.UserRole;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

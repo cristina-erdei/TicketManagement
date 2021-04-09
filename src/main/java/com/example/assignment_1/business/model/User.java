@@ -1,8 +1,7 @@
 package com.example.assignment_1.business.model;
 
 import com.example.assignment_1.data.model.UserDB;
-import com.example.assignment_1.data.model.UserRole;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.assignment_1.helper.UserRole;
 
 public class User {
     private Long id;

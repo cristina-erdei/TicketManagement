@@ -1,11 +1,11 @@
 package com.example.assignment_1.data.model;
 
 import com.example.assignment_1.business.model.User;
+import com.example.assignment_1.helper.UserRole;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.util.Random;
 
 @Entity
 public class UserDB {

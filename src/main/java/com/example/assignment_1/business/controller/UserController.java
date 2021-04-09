@@ -2,15 +2,13 @@ package com.example.assignment_1.business.controller;
 
 import com.example.assignment_1.business.model.User;
 import com.example.assignment_1.business.service.implementation.UserServiceImpl;
-import com.example.assignment_1.data.model.UserDB;
-import com.example.assignment_1.data.model.UserRole;
+import com.example.assignment_1.helper.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")

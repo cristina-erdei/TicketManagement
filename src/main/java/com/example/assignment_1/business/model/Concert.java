@@ -1,10 +1,9 @@
 package com.example.assignment_1.business.model;
 
 import com.example.assignment_1.data.model.ConcertDB;
-import com.example.assignment_1.data.model.Genre;
+import com.example.assignment_1.helper.Genre;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class Concert {
     private Long id;

@@ -3,7 +3,7 @@ package com.example.assignment_1.business.service.implementation;
 import com.example.assignment_1.business.model.User;
 import com.example.assignment_1.business.service.interfaces.UserService;
 import com.example.assignment_1.data.model.UserDB;
-import com.example.assignment_1.data.model.UserRole;
+import com.example.assignment_1.helper.UserRole;
 import com.example.assignment_1.data.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

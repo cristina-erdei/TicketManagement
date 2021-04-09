@@ -1,11 +1,8 @@
 package com.example.assignment_1.business.model;
 
-import com.example.assignment_1.data.model.ConcertDB;
-import com.example.assignment_1.data.model.Genre;
+import com.example.assignment_1.helper.Genre;
 
-import java.time.LocalDateTime;
-
-public class ConcertRequestModel {
+public class ConcertCreateModel {
     private String title;
     private int maximumNumberOfTickets;
     private int year;
