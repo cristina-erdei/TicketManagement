@@ -4,16 +4,21 @@ import com.example.assignment_1.business.model.Concert;
 import com.example.assignment_1.business.model.Ticket;
 import com.example.assignment_1.business.model.TicketCreateModel;
 import com.example.assignment_1.business.model.User;
+import com.example.assignment_1.business.report.Report;
+import com.example.assignment_1.business.report.ReportFactory;
 import com.example.assignment_1.business.service.implementation.ConcertServiceImpl;
 import com.example.assignment_1.business.service.implementation.TicketServiceImpl;
 import com.example.assignment_1.business.service.implementation.UserServiceImpl;
 import com.example.assignment_1.data.model.TicketDB;
+import com.example.assignment_1.helper.ReportType;
 import com.example.assignment_1.helper.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -57,7 +62,8 @@ public class TicketController {
         int availableSeats = concertService.getAvailableSeats(ticket.getConcertId());
 
         if(availableSeats == -1){
-            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+            System.out.println("Not enough tickets.");
+            return new ResponseEntity<>(null,HttpStatus.I_AM_A_TEAPOT);
         }
 
         if (availableSeats < ticket.getNumberOfSeats()) {
@@ -94,5 +100,15 @@ public class TicketController {
         ticketService.deleteById(id);
 
         return new ResponseEntity<>(ticket, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/generateReport/{type}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public @ResponseBody byte[] getReport(@PathVariable ReportType type){
+        List<Ticket> tickets = findAll();
+        System.out.println("type = " + type);
+        String report = ReportFactory.generateReport(type, tickets);
+        System.out.println("report = " + report);
+
+        return report.getBytes(StandardCharsets.UTF_8);
     }
 }
