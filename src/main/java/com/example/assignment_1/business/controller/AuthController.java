@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Objects;
 
 @RestController
@@ -23,7 +25,10 @@ public class AuthController {
     ResponseEntity<String> login(@RequestBody LoginRequestModel loginRequestModel) {
         User user = userService.findByUsername(loginRequestModel.getUsername());
 
-        if (!Objects.equals(user.getPassword(), loginRequestModel.getPassword())) {
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encodedPassword = encoder.encodeToString(loginRequestModel.getPassword().getBytes(StandardCharsets.UTF_8));
+
+        if (!Objects.equals(user.getPassword(), encodedPassword)) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 

@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -80,6 +82,8 @@ public class UserController {
 
     @PostMapping("/create")
     public void save(@RequestBody User user) {
+        Base64.Encoder encoder = Base64.getEncoder();
+        user.setPassword(encoder.encodeToString(user.getPassword().getBytes(StandardCharsets.UTF_8)));
         userService.save(user);
     }
 
