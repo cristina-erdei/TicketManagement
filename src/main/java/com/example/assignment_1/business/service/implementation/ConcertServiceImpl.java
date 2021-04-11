@@ -63,14 +63,14 @@ public class ConcertServiceImpl implements ConcertService {
 
 
         concert.setArtist(new ArtistDB(artist));
-        concert.setTitle(newValue.getTitle());
+        if(newValue.getTitle() != null) concert.setTitle(newValue.getTitle());
         concert.setMaximumNumberOfTickets(newValue.getMaximumNumberOfTickets());
         concert.setDateAndTime(LocalDateTime.of(newValue.getYear(),
                 newValue.getMonth(),
                 newValue.getDay(),
                 newValue.getHour(),
                 newValue.getMinute()));
-        concert.setGenre(newValue.getGenre());
+        if(newValue.getGenre() != null) concert.setGenre(newValue.getGenre());
         return new Concert(concertRepository.save(concert));
     }
 

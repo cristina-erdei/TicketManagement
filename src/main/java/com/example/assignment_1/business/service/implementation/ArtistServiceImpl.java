@@ -47,7 +47,7 @@ public class ArtistServiceImpl implements ArtistService {
         if(aux.isEmpty()) return null;
 
         ArtistDB artist = aux.get();
-        artist.setName(newValue.getName());
+        if(newValue.getName() != null) artist.setName(newValue.getName());
         return new Artist(artistRepository.save(artist));
     }
 

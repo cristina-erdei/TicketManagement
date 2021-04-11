@@ -61,7 +61,7 @@ public class TicketServiceImpl implements TicketService {
 
         TicketDB ticket = aux.get();
         ticket.setConcert(new ConcertDB(concert));
-        ticket.setNumberOfSeats(newValue.getNumberOfSeats());
+        if(newValue.getNumberOfSeats() > 0) ticket.setNumberOfSeats(newValue.getNumberOfSeats());
 
 
         return new Ticket(ticketRepository.save(ticket));
