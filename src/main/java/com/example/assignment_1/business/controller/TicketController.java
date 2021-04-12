@@ -29,6 +29,8 @@ public class TicketController {
     private TicketServiceImpl ticketService;
     @Autowired
     private ConcertServiceImpl concertService;
+    @Autowired
+    private UserServiceImpl userService;
 
 
     @GetMapping("/getAll")
@@ -62,12 +64,12 @@ public class TicketController {
         int availableSeats = concertService.getAvailableSeats(ticket.getConcertId());
 
         if(availableSeats == -1){
-            System.out.println("Not enough tickets.");
-            return new ResponseEntity<>(null,HttpStatus.I_AM_A_TEAPOT);
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
         }
 
         if (availableSeats < ticket.getNumberOfSeats()) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            System.out.println("Not enough tickets.");
+            return new ResponseEntity<>(null, HttpStatus.I_AM_A_TEAPOT);
         }
 
         Ticket ticket1 = new Ticket();
@@ -103,12 +105,16 @@ public class TicketController {
     }
 
     @GetMapping(value = "/generateReport/{type}", produces = MediaType.TEXT_PLAIN_VALUE)
-    public @ResponseBody byte[] getReport(@PathVariable ReportType type){
-        List<Ticket> tickets = findAll();
-        System.out.println("type = " + type);
-        String report = ReportFactory.generateReport(type, tickets);
-        System.out.println("report = " + report);
+    public  ResponseEntity<byte[]> getReport(@PathVariable ReportType type, @RequestHeader("Token") String token){
+        User requestingUser = userService.findByToken(token);
 
-        return report.getBytes(StandardCharsets.UTF_8);
+        if (requestingUser.getRole() != UserRole.Administrator) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
+        List<Ticket> tickets = findAll();
+        String report = ReportFactory.generateReport(type, tickets);
+
+        return new ResponseEntity<>(report.getBytes(StandardCharsets.UTF_8), HttpStatus.OK);
     }
 }

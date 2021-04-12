@@ -112,20 +112,20 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteById/{userId}")
-    public ResponseEntity deleteById(@PathVariable Long userId, @RequestHeader("Token") String token) {
+    public ResponseEntity<User> deleteById(@PathVariable Long userId, @RequestHeader("Token") String token) {
         User requestingUser = userService.findByToken(token);
 
         if (requestingUser.getRole() != UserRole.Administrator) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
         User user = userService.findById(userId);
         if(user == null || user.getId() == null){
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
         }
 
         userService.deleteById(userId);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
 
     }
 

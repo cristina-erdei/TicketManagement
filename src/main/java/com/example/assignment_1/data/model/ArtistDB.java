@@ -23,10 +23,8 @@ public class ArtistDB {
     }
 
     public ArtistDB(Artist artist){
-        System.out.println("entering artist constructor");
         this.id = artist.getId();
         this.name = artist.getName();
-        System.out.println("exiting artist constructor");
     }
 
     public void setId(Long id) {

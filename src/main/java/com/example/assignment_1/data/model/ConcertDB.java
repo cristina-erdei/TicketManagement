@@ -28,14 +28,12 @@ public class ConcertDB {
     }
 
     public ConcertDB(Concert concert){
-        System.out.println("entering concert constructor");
         this.id = concert.getId();
         this.artist = new ArtistDB(concert.getArtist());
         this.title = concert.getTitle();
         this.maximumNumberOfTickets = concert.getMaximumNumberOfTickets();
         this.dateAndTime = concert.getDateAndTime();
         this.genre = concert.getGenre();
-        System.out.println("exiting concert constructor");
     }
 
     public Genre getGenre() {
